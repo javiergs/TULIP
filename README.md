@@ -27,7 +27,7 @@ You can include **TULIP** in your Java project using [JitPack](https://jitpack.i
 <dependency>
   <groupId>com.github.javiergs</groupId>
   <artifactId>TULIP</artifactId>
-  <version>v1.0.0</version>
+  <version>v1.1</version>
 </dependency>
 ```
 
