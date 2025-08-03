@@ -31,6 +31,10 @@ You can include **TULIP** in your Java project using [JitPack](https://jitpack.i
 </dependency>
 ```
 
-## 🔍 Available Versions
+## Available Versions
 
 Visit [https://jitpack.io/#javiergs/TULIP](https://jitpack.io/#javiergs/TULIP) to see all available versions and build status.
+
+## Documentation
+
+📘 [View JavaDoc](https://javiergs.github.io/TULIP/)
