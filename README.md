@@ -1,4 +1,4 @@
-https://jitpack.io/#javiergs/TULIP/v1.0
+[![](https://jitpack.io/v/javiergs/TULIP.svg)](https://jitpack.io/#javiergs/TULIP)
 
 # Teaching Utilities for Learning Individual Practices
 A lightweight Java teaching library for rapid, structured student projects
