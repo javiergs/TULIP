@@ -37,4 +37,4 @@ Visit [https://jitpack.io/#javiergs/TULIP](https://jitpack.io/#javiergs/TULIP) t
 
 ## Documentation
 
-📘 [View JavaDoc](https://javiergs.github.io/TULIP/)
+[View JavaDoc](https://javiergs.github.io/TULIP/)
