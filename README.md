@@ -1,3 +1,5 @@
+https://jitpack.io/#javiergs/TULIP/v1.0
+
 # Teaching Utilities for Learning Individual Practices
 A lightweight Java teaching library for rapid, structured student projects
 
