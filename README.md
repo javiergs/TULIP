@@ -1,4 +1,4 @@
-# TULIP: Teaching Utilities for Learning Individual Practices
+# Teaching Utilities for Learning Individual Practices
 A lightweight Java teaching library for rapid, structured student projects
 
 ## Features
