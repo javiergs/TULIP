@@ -124,5 +124,63 @@ public class GitHubHandler {
 		return files;
 	}
 	
+	
+	/**
+	 * Parses a GitHub URL, updates this object's owner/repo,
+	 * and returns ALL files (recursive) under the parsed path.
+	 *
+	 * Supported URL forms:
+	 *   https://github.com/{owner}/{repo}
+	 *   https://github.com/{owner}/{repo}/tree/{branch}
+	 *   https://github.com/{owner}/{repo}/tree/{branch}/{path...}
+	 *   https://github.com/{owner}/{repo}/blob/{branch}/{path...}
+	 *
+	 * If no path is present after /tree/{branch}/ or /blob/{branch}/,
+	 * the repository root is used.
+	 *
+	 * @param repoUrl a GitHub URL
+	 * @return list of all file paths (recursive) starting at the parsed path (or repo root)
+	 * @throws IOException on API failures
+	 * @throws IllegalArgumentException if the URL cannot be parsed
+	 */
+	public List<String> listFilesFromUrl(String repoUrl) throws IOException {
+		String path = parseGithubUrl(repoUrl);
+		String startPath = (path == null) ? "" : path;
+		return listFilesRecursive(startPath);
+	}
+
+	
+	/**
+	 * Parses a GitHub URL into owner, repo, and optional path (after /tree/{branch}/ or /blob/{branch}/).
+	 */
+	private String parseGithubUrl(String url) {
+		String s = url.trim();
+		if (s.endsWith("/")) s = s.substring(0, s.length() - 1);
+		URI uri = URI.create(s);
+		if (uri.getHost() == null || !uri.getHost().equalsIgnoreCase("github.com")) {
+			throw new IllegalArgumentException("Not a github.com URL: " + url);
+		}
+		String[] parts = uri.getPath().split("/");
+		// path starts with '/', so parts[0] == ""
+		if (parts.length < 3) {
+			throw new IllegalArgumentException("URL must be like https://github.com/{owner}/{repo}[...]");
+		}
+		String owner = parts[1];
+		String repo  = parts[2];
+		String path = null;
+		if (parts.length >= 5 && ("tree".equals(parts[3]) || "blob".equals(parts[3]))) {
+			if (parts.length > 5) {
+				StringBuilder sb = new StringBuilder();
+				for (int i = 5; i < parts.length; i++) {
+					if (sb.length() > 0) sb.append('/');
+					sb.append(parts[i]);
+				}
+				path = sb.toString();
+			} else {
+				path = ""; // explicitly no path after branch
+			}
+		}
+		return path;
+	}
 
 }
