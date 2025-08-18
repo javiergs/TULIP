@@ -33,6 +33,16 @@ public class GitHubHandler {
 	}
 	
 	/**
+	 * Default constructor for a GitHubHandler without specific repository.
+	 * This constructor can be used to set the owner and repo later.
+	 */
+	public GitHubHandler() {
+		this.owner = "";
+		this.repo = "";
+	}
+	
+	
+	/**
 	 * Lists all file names in a given folder of a public GitHub repository.
 	 *
 	 * @param path  the folder path inside the repository
@@ -182,5 +192,6 @@ public class GitHubHandler {
 		}
 		return path;
 	}
+	
 
 }
