@@ -94,5 +94,35 @@ public class GitHubHandler {
 		connection.disconnect();
 		return contentBuilder.toString();
 	}
+	
+	/**
+	 * Recursively lists all file names in a given folder of a public GitHub repository.
+	 *
+	 * @param path  the folder path inside the repository
+	 * @return a list of file paths (relative to the root)
+	 * @throws IOException if the API call fails
+	 */
+	public List<String> listFilesRecursive(String path) throws IOException {
+		String apiUrl = String.format(
+			"https://api.github.com/repos/%s/%s/contents/%s", owner, repo, path
+		);
+		JSONArray jsonArray = new JSONArray(get(apiUrl));
+		List<String> files = new ArrayList<>();
+		
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject fileObj = jsonArray.getJSONObject(i);
+			String type = fileObj.getString("type");
+			String filePath = fileObj.getString("path"); // GitHub API returns full relative path
+			
+			if ("file".equals(type)) {
+				files.add(filePath);
+			} else if ("dir".equals(type)) {
+				// Recurse into subfolder
+				files.addAll(listFilesRecursive(filePath));
+			}
+		}
+		return files;
+	}
+	
 
 }
