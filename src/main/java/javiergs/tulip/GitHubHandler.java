@@ -248,7 +248,6 @@ public class GitHubHandler {
 			url.append("?ref=").append(encQuery(ref));
 		}
 		String finalUrl = url.toString();
-		System.out.println("DEBUG getContentsArray → " + finalUrl); // <— print it
 		String json = apiGet(finalUrl);
 		return new JSONArray(json);
 	}
