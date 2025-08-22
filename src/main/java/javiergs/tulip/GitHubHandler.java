@@ -1,197 +1,295 @@
 package javiergs.tulip;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.util.*;
-import java.util.Base64;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
 /**
- * A utility class for interacting with public GitHub repositories using the GitHub REST API.
- * Supports listing files in a folder and retrieving file contents.
+ * Lightweight helper for accessing the GitHub REST API (v3),
+ * supporting basic operations such as retrieving file content
+ * and listing files or folders in a repository.
+ *
+ * Use with or without a token. Anonymous: ~60 req/hr; token: ~5000 req/hr.
  *
  * @author Javier Gonzalez-Sanchez
- * @version 1.0
+ * @version 2.0
  */
 public class GitHubHandler {
 	
-	private final String owner;
-	private final String repo;
+	private static final String API_BASE = "https://api.github.com";
+	private String token;
 	
 	/**
-	 * Constructor to initialize the GitHubHandler with a specific repository.
-	 * @param owner the GitHub username or organization
-	 * @param repo  the name of the repository
-	 */
-	public GitHubHandler(String owner, String repo) {
-		this.owner = owner;
-		this.repo = repo;
-	}
-	
-	/**
-	 * Default constructor for a GitHubHandler without specific repository.
-	 * This constructor can be used to set the owner and repo later.
+	 * Default constructor without authentication token.
+	 * Use this for anonymous access (limited rate).
+	 * GitHub allows anonymous access with a limited rate (60 req/hr).
 	 */
 	public GitHubHandler() {
-		this.owner = "";
-		this.repo = "";
+		this.token = null;
 	}
 	
+	/**
+	 * Constructor with authentication token.
+	 * Use this for higher rate limits (5000 req/hr).
+	 * @param token GitHub personal access token (PAT) or OAuth token.
+	 *              If null or empty, anonymous access is used.
+	 */
+	public GitHubHandler(String token) {
+		this.token = token;
+	}
 	
 	/**
-	 * Lists all file names in a given folder of a public GitHub repository.
+	 * Get decoded text content of a file via URL.
 	 *
-	 * @param path  the folder path inside the repository
-	 * @return a list of file paths (relative to the root)
-	 * @throws IOException if the API call fails
+	 * @param fileUrl the full URL to the file on GitHub.
+	 *
+	 * @return the decoded text content of the file
+	 *
+	 * @throws IllegalArgumentException if the URL does not point to a file
+	 * @throws IOException if the file cannot be accessed or decoded
 	 */
-	public List<String> listFiles(String path) throws IOException {
-		String apiUrl = String.format(
-			"https://api.github.com/repos/%s/%s/contents/%s", owner, repo, path
-		);
-		JSONArray jsonArray = new JSONArray(get(apiUrl));
-		List<String> files = new ArrayList<>();
-		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject fileObj = jsonArray.getJSONObject(i);
-			if ("file".equals(fileObj.getString("type"))) {
-				files.add(path + "/" + fileObj.getString("name"));
-			}
+	public String getFileContentFromUrl(String fileUrl) throws IOException {
+		URLHelper u = URLHelper.parseGitHubUrl(fileUrl);
+		if (!u.isBlob) {
+			throw new IllegalArgumentException("URL does not point to a file (/blob/...): " + fileUrl);
 		}
-		return files;
+		String path = (u.path == null) ? "" : u.path;
+		return getFileContent(u.owner, u.repo, path, u.ref);
 	}
 	
 	/**
-	 * Retrieves the raw content of a file in a public GitHub repository.
+	 * Get decoded text content of a file via owner/repo/path (+ optional ref).
+	 * The file must be a text file (not binary).
+	 * The content is returned as a UTF-8 string.
 	 *
-	 * @param path  the full file path inside the repository
-	 * @return the decoded content of the file as a String
-	 * @throws IOException if the file cannot be retrieved or is not base64-encoded
+	 * @param owner the repository owner (user or organization) must not be null/blank
+	 * @param repo  the repository name must not be null/blank
+	 * @param path  the file path within the repository; if null or blank, the repository root is used
+	 * @param ref   optional branch/tag/commit; if null or blank, the repository’s default branch is used
+	 *
+	 * @return the file content decoded as UTF-8 text
+	 *
+	 * @throws IOException if the API call fails or the response cannot be decoded
+	 * @throws IllegalArgumentException if any argument is invalid or the path does not reference a file
+	 
 	 */
-	public String getFileContent(String path) throws IOException {
-		String apiUrl = String.format(
-			"https://api.github.com/repos/%s/%s/contents/%s", owner, repo, path
-		);
-		JSONObject fileObj = new JSONObject(get(apiUrl));
-		String encoding = fileObj.optString("encoding");
-		if (!"base64".equals(encoding)) {
-			throw new IOException("Unexpected encoding: " + encoding);
+	public String getFileContent(String owner, String repo, String path, String ref) throws IOException {
+		StringBuilder url = new StringBuilder();
+		url.append(API_BASE).append("/repos/")
+			.append(enc(owner)).append("/").append(enc(repo))
+			.append("/contents/").append(enc(path));
+		if (ref != null && !ref.isBlank()) {
+			url.append("?ref=").append(encQuery(ref));
+		}
+		JSONObject fileObj = new JSONObject(apiGet(url.toString()));
+		String encoding = fileObj.optString("encoding", "");
+		if (!"base64".equalsIgnoreCase(encoding)) {
+			throw new IOException("Unexpected encoding for file content: " + encoding);
 		}
 		String encoded = fileObj.getString("content").replaceAll("\\s", "");
-		return new String(Base64.getDecoder().decode(encoded));
-	}
-	
-	private String get(String apiUrl) throws IOException {
-		HttpURLConnection connection = (HttpURLConnection) URI.create(apiUrl).toURL().openConnection();
-		connection.setRequestMethod("GET");
-		connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
-		
-		int status = connection.getResponseCode();
-		if (status != 200) {
-			throw new IOException("GitHub API call failed with status: " + status);
-		}
-		
-		BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		String inputLine;
-		StringBuilder contentBuilder = new StringBuilder();
-		while ((inputLine = in.readLine()) != null) {
-			contentBuilder.append(inputLine);
-		}
-		in.close();
-		connection.disconnect();
-		return contentBuilder.toString();
+		byte[] decoded = java.util.Base64.getDecoder().decode(encoded);
+		return new String(decoded, StandardCharsets.UTF_8);
 	}
 	
 	/**
-	 * Recursively lists all file names in a given folder of a public GitHub repository.
+	 * List files (names only) in a directory by URL (non-recursive).
 	 *
-	 * @param path  the folder path inside the repository
-	 * @return a list of file paths (relative to the root)
-	 * @throws IOException if the API call fails
+	 * @param dirUrl the full URL to the directory on GitHub.
+	 *
+	 * @return a list of file names (not full paths) in the specified directory
+	 *
+	 * @throws IOException if the API call fails or the response cannot be decoded
+	 * @throws IllegalArgumentException if the URL does not point to a directory
+	 * @throws IllegalArgumentException if the URL points to a file instead of a directory
+	 *
 	 */
-	public List<String> listFilesRecursive(String path) throws IOException {
-		String apiUrl = String.format(
-			"https://api.github.com/repos/%s/%s/contents/%s", owner, repo, path
-		);
-		JSONArray jsonArray = new JSONArray(get(apiUrl));
+	public List<String> listFiles(String dirUrl) throws IOException {
+		URLHelper u = URLHelper.ensureTree(dirUrl);
+		return listFiles(u.owner, u.repo, u.path, u.ref); // path first, then ref
+	}
+	
+	/**
+	 * Lists files in a directory by owner/repo/path (+ optional ref).
+	 * The returned paths can be passed directly as the {@code path} argument to
+	 * {@link #getFileContent(String, String, String, String)}.
+	 *
+	 * @param owner the repository owner (user or organization) must not be null/blank
+	 * @param repo  the repository name must not be null/blank
+	 * @param path  the directory path within the repository; if null or blank, the repository root is used
+	 * @param ref   optional branch/tag/commit; if null or blank, the repository’s default branch is used
+	 *
+	 * @return a list of file names (full paths) in the specified directory
+	 *
+	 * @throws IOException if the API call fails or the response cannot be decoded
+	 * @throws IllegalArgumentException if any argument is invalid or the path does not reference a directory
+	 */
+	public List<String> listFiles(String owner, String repo, String path, String ref) throws IOException {
+		JSONArray arr = getContentsArray(owner, repo, path, ref);
 		List<String> files = new ArrayList<>();
-		
-		for (int i = 0; i < jsonArray.length(); i++) {
-			JSONObject fileObj = jsonArray.getJSONObject(i);
-			String type = fileObj.getString("type");
-			String filePath = fileObj.getString("path"); // GitHub API returns full relative path
-			
-			if ("file".equals(type)) {
-				files.add(filePath);
-			} else if ("dir".equals(type)) {
-				// Recurse into subfolder
-				files.addAll(listFilesRecursive(filePath));
+		for (int i = 0; i < arr.length(); i++) {
+			JSONObject o = arr.getJSONObject(i);
+			if ("file".equals(o.getString("type"))) {
+				files.add(o.getString("path"));
 			}
 		}
 		return files;
 	}
 	
-	
 	/**
-	 * Parses a GitHub URL, updates this object's owner/repo,
-	 * and returns ALL files (recursive) under the parsed path.
+	 * List files (names only) in a directory by URL (non-recursive).
+	 * This method is similar to {@link #listFiles(String, String, String, String)},
+	 * but it takes a URL instead of owner/repo/branch/path.
+	 * @param dirUrl the full URL to the directory on GitHub.
 	 *
-	 * Supported URL forms:
-	 *   https://github.com/{owner}/{repo}
-	 *   https://github.com/{owner}/{repo}/tree/{branch}
-	 *   https://github.com/{owner}/{repo}/tree/{branch}/{path...}
-	 *   https://github.com/{owner}/{repo}/blob/{branch}/{path...}
+	 * @return a list of file names (not full paths) in the specified directory
 	 *
-	 * If no path is present after /tree/{branch}/ or /blob/{branch}/,
-	 * the repository root is used.
-	 *
-	 * @param repoUrl a GitHub URL
-	 * @return list of all file paths (recursive) starting at the parsed path (or repo root)
-	 * @throws IOException on API failures
-	 * @throws IllegalArgumentException if the URL cannot be parsed
+	 * @throws IOException if the API call fails or the response cannot be decoded
+	 * @throws IllegalArgumentException if the URL does not point to a directory
+	 * @throws IllegalArgumentException if the URL points to a file instead of a directory
 	 */
-	public List<String> listFilesFromUrl(String repoUrl) throws IOException {
-		String path = parseGithubUrl(repoUrl);
-		String startPath = (path == null) ? "" : path;
-		return listFilesRecursive(startPath);
+	public List<String> listFolders(String dirUrl) throws IOException {
+		URLHelper u = URLHelper.ensureTree(dirUrl);
+		return listFolders(u.owner, u.repo, u.ref, u.path); // branch then path
 	}
-
 	
 	/**
-	 * Parses a GitHub URL into owner, repo, and optional path (after /tree/{branch}/ or /blob/{branch}/).
+	 * This method retrieves the contents of a directory in a GitHub repository.
+	 *
+	 * @param owner the repository owner (user or organization) must not be null/blank
+	 * @param repo the repository name must not be null/blank
+	 * @param branch the branch name; if null or blank, the repository’s default branch is used
+	 * @param path the directory path within the repository; if null or blank, the repository root is used
+
+	 * @return a list of file names (not full paths) in the specified directory
+
+	 * @throws IllegalArgumentException if any argument is invalid or the path does not reference a directory
+	 * @throws IOException if the API call fails or the response cannot be decoded
 	 */
-	private String parseGithubUrl(String url) {
-		String s = url.trim();
-		if (s.endsWith("/")) s = s.substring(0, s.length() - 1);
-		URI uri = URI.create(s);
-		if (uri.getHost() == null || !uri.getHost().equalsIgnoreCase("github.com")) {
-			throw new IllegalArgumentException("Not a github.com URL: " + url);
-		}
-		String[] parts = uri.getPath().split("/");
-		// path starts with '/', so parts[0] == ""
-		if (parts.length < 3) {
-			throw new IllegalArgumentException("URL must be like https://github.com/{owner}/{repo}[...]");
-		}
-		String owner = parts[1];
-		String repo  = parts[2];
-		String path = null;
-		if (parts.length >= 5 && ("tree".equals(parts[3]) || "blob".equals(parts[3]))) {
-			if (parts.length > 5) {
-				StringBuilder sb = new StringBuilder();
-				for (int i = 5; i < parts.length; i++) {
-					if (sb.length() > 0) sb.append('/');
-					sb.append(parts[i]);
-				}
-				path = sb.toString();
-			} else {
-				path = ""; // explicitly no path after branch
+	public List<String> listFolders(String owner, String repo, String branch, String path) throws IOException {
+		JSONArray arr = getContentsArray(owner, repo, path, branch);
+		List<String> folders = new ArrayList<>();
+		for (int i = 0; i < arr.length(); i++) {
+			JSONObject o = arr.getJSONObject(i);
+			if ("dir".equals(o.getString("type"))) {
+				folders.add(o.getString("path"));
 			}
 		}
-		return path;
+		return folders;
 	}
 	
+	/** URL-based: recursively list all files under a directory URL (or entire repo if root).
+	 * This method is similar to {@link #listFilesRecursive(String, String, String, String)},
+	 * but it takes a URL instead of owner/repo/branch/path.
+	 *
+	 * @param startDirUrl the full URL to the directory on GitHub.
+	 *
+	 * @return a list of file paths (relative to the repository root)
+	 *
+	 * @throws IOException if the API call fails or the response cannot be decoded
+	 * @throws IllegalArgumentException if the URL does not point to a directory
+	 */
+	public List<String> listFilesRecursive(String startDirUrl) throws IOException {
+		URLHelper u = URLHelper.parseGitHubUrl(startDirUrl);
+		if (u.isBlob) throw new IllegalArgumentException("URL points to a file, not a directory: " + startDirUrl);
+		return listFilesRecursive(u.owner, u.repo, u.ref, u.path);
+	}
+	
+	/** Recursively list all file paths (relative to repo root) under owner/repo/branch/path.
+	 *
+	 * @param owner the repository owner (user or organization) must not be null/blank
+	 * @param repo the repository name must not be null/blank
+	 * @param branch the branch name; if null or blank, the repository’s default branch is used
+	 * @param path the directory path within the repository; if null or blank, the repository root is used
 
+	 * @return a list of file paths (relative to the repository root)
+
+	 * @throws IOException if the API call fails or the response cannot be decoded
+	 * @throws IllegalArgumentException if any argument is invalid or the path does not reference a directory
+	 *
+	 */
+	public List<String> listFilesRecursive(String owner, String repo, String branch, String path) throws IOException {
+		List<String> results = new ArrayList<>();
+		Deque<String> stack = new ArrayDeque<>();
+		stack.push((path == null) ? "" : path);
+		while (!stack.isEmpty()) {
+			String subPath = stack.pop();
+			JSONArray arr = getContentsArray(owner, repo, subPath, branch);
+			for (int i = 0; i < arr.length(); i++) {
+				JSONObject o = arr.getJSONObject(i);
+				String type = o.getString("type"); // "file" | "dir" | "symlink" | "submodule"
+				String filePath = o.getString("path");
+				if ("file".equals(type)) {
+					results.add(filePath);
+				} else if ("dir".equals(type)) {
+					stack.push(filePath);
+				}
+			}
+		}
+		return results;
+	}
+	
+	private JSONArray getContentsArray(String owner, String repo, String path, String ref) throws IOException {
+		StringBuilder url = new StringBuilder();
+		url.append(API_BASE).append("/repos/")
+			.append(enc(owner)).append("/").append(enc(repo))
+			.append("/contents");
+		if (path != null && !path.isBlank()) {
+			url.append("/").append(enc(path));
+		}
+		if (ref != null && !ref.isBlank()) {
+			url.append("?ref=").append(encQuery(ref));
+		}
+		String finalUrl = url.toString();
+		System.out.println("DEBUG getContentsArray → " + finalUrl); // <— print it
+		String json = apiGet(finalUrl);
+		return new JSONArray(json);
+	}
+	
+	private String apiGet(String url)
+		throws IOException {
+		HttpURLConnection c = (HttpURLConnection) URI.create(url).toURL().openConnection();
+		c.setRequestMethod("GET");
+		c.setRequestProperty("Accept", "application/vnd.github.v3+json");
+		c.setRequestProperty("User-Agent", "javiergs-tulip/2.0"); // GitHub requires a UA
+		if (token != null && !token.isBlank()) {
+			c.setRequestProperty("Authorization", "Bearer " + token.trim());
+		}
+		int status = c.getResponseCode();
+		if (status != 200) {
+			String rem = c.getHeaderField("X-RateLimit-Remaining");
+			String rst = c.getHeaderField("X-RateLimit-Reset");
+			throw new IOException("GitHub API failed: HTTP " + status
+				+ (rem != null ? " (remaining=" + rem + ", resetEpoch=" + rst + ")" : ""));
+		}
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream(), StandardCharsets.UTF_8))) {
+			StringBuilder sb = new StringBuilder();
+			String line;
+			while ((line = in.readLine()) != null) sb.append(line);
+			return sb.toString();
+		} finally {
+			c.disconnect();
+		}
+	}
+	
+	private static String enc(String s) {
+		String e = URLEncoder.encode(s, StandardCharsets.UTF_8);
+		return e.replace("%2F", "/");
+	}
+	
+	private static String encQuery(String s) {
+		return URLEncoder.encode(s, StandardCharsets.UTF_8);
+	}
+	
+	private static String orDefault(String ref) {
+		return ref;
+	}
+	
 }
