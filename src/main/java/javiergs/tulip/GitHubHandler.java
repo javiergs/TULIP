@@ -56,9 +56,24 @@ public class GitHubHandler {
 	 * @throws IllegalArgumentException if the URL does not point to a file
 	 * @throws IOException if the file cannot be accessed or decoded
 	 */
+	//public String getFileContentFromUrl(String fileUrl) throws IOException {
+	//	URLHelper u = URLHelper.parseGitHubUrl(fileUrl);
+	//	if (!u.isBlob) {
+	//		throw new IllegalArgumentException("URL does not point to a file (/blob/...): " + fileUrl);
+	//	}
+	//	String path = (u.path == null) ? "" : u.path;
+	//	return getFileContent(u.owner, u.repo, path, u.ref);
+	//}
+	
 	public String getFileContentFromUrl(String fileUrl) throws IOException {
 		URLHelper u = URLHelper.parseGitHubUrl(fileUrl);
 		if (!u.isBlob) {
+			// If the user gave just ".../repo/path/to/File.java" without /blob/<ref>/...
+			// we can assume main and re-call with a normalized URL
+			if ((u.ref == null || u.ref.isBlank()) && u.path != null && !u.path.isBlank()) {
+				// re-try using owner/repo/path with the default branch "main"
+				return getFileContent(u.owner, u.repo, u.path, "main");
+			}
 			throw new IllegalArgumentException("URL does not point to a file (/blob/...): " + fileUrl);
 		}
 		String path = (u.path == null) ? "" : u.path;
