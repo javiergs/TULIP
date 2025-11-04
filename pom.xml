@@ -6,7 +6,7 @@
 
     <groupId>javiergs</groupId>
     <artifactId>tulip</artifactId>
-    <version>v2.0</version>
+    <version>v2.2</version>
 
     <name>TULIP</name>
     <description>Teaching Utilities for Learning Individual Practices</description>

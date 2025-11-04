@@ -196,9 +196,25 @@ public class GitHubHandler {
 	 * @throws IOException if the API call fails or the response cannot be decoded
 	 * @throws IllegalArgumentException if the URL does not point to a directory
 	 */
+	//public List<String> listFilesRecursive(String startDirUrl) throws IOException {
+	//	URLHelper u = URLHelper.parseGitHubUrl(startDirUrl);
+	//	if (u.isBlob) throw new IllegalArgumentException("URL points to a file, not a directory: " + startDirUrl);
+	//	return listFilesRecursive(u.owner, u.repo, u.ref, u.path);
+	//}
+	
 	public List<String> listFilesRecursive(String startDirUrl) throws IOException {
 		URLHelper u = URLHelper.parseGitHubUrl(startDirUrl);
-		if (u.isBlob) throw new IllegalArgumentException("URL points to a file, not a directory: " + startDirUrl);
+		
+		// If the user just gave "https://github.com/owner/repo" (no /tree/ or /blob/)
+		// assume branch "main" at repo root.
+		if (!u.isBlob && (u.ref == null || u.ref.isBlank())) {
+			return listFilesRecursive(u.owner, u.repo, "main", "");
+		}
+		
+		if (u.isBlob) {
+			throw new IllegalArgumentException("URL points to a file, not a directory: " + startDirUrl);
+		}
+		
 		return listFilesRecursive(u.owner, u.repo, u.ref, u.path);
 	}
 	
