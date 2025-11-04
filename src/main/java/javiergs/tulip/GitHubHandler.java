@@ -237,21 +237,54 @@ public class GitHubHandler {
 	//	return listFilesRecursive(u.owner, u.repo, u.ref, u.path);
 	//}
 	
-	public List<String> listFilesRecursive(String startDirUrl) throws IOException {
-		URLHelper u = URLHelper.parseGitHubUrl(startDirUrl);
+	//public List<String> listFilesRecursive(String startDirUrl) throws IOException {
+	//	URLHelper u = URLHelper.parseGitHubUrl(startDirUrl);
 		
 		// If the user just gave "https://github.com/owner/repo" (no /tree/ or /blob/)
 		// assume branch "main" at repo root.
-		if (!u.isBlob && (u.ref == null || u.ref.isBlank())) {
-			return listFilesRecursive(u.owner, u.repo, "main", "");
+	//	if (!u.isBlob && (u.ref == null || u.ref.isBlank())) {
+	//		return listFilesRecursive(u.owner, u.repo, "main", "");
+	//	}
+		
+	//	if (u.isBlob) {
+	//		throw new IllegalArgumentException("URL points to a file, not a directory: " + startDirUrl);
+	//	}
+		
+	//	return listFilesRecursive(u.owner, u.repo, u.ref, u.path);
+	//}
+	
+	
+	// URL-based: recursively list all files under a directory URL (or entire repo if root).
+	public List<String> listFilesRecursive(String startDirUrl) throws IOException {
+		// normalize trailing slash
+		String url = startDirUrl.endsWith("/") ? startDirUrl.substring(0, startDirUrl.length() - 1) : startDirUrl;
+		
+		// If the URL does NOT contain /tree/ or /blob/, it's probably just:
+		// https://github.com/{owner}/{repo}[/...]
+		if (!url.contains("/tree/") && !url.contains("/blob/")) {
+			// split into pieces
+			// e.g. https://github.com/javiergs/ADASIM -> ["https:", "", "github.com", "javiergs", "ADASIM"]
+			String[] parts = url.split("/", 6);
+			if (parts.length < 5) {
+				throw new IllegalArgumentException("Cannot recognize GitHub repo from URL: " + startDirUrl);
+			}
+			String owner = parts[3];
+			String repo  = parts[4];
+			// if there is more after repo (rare in this case), grab it as path
+			String path  = (parts.length == 6) ? parts[5] : "";
+			// assume default branch "main"
+			return listFilesRecursive(owner, repo, "main", path);
 		}
 		
+		// original behavior for proper /tree/... URLs
+		URLHelper u = URLHelper.parseGitHubUrl(startDirUrl);
 		if (u.isBlob) {
 			throw new IllegalArgumentException("URL points to a file, not a directory: " + startDirUrl);
 		}
-		
 		return listFilesRecursive(u.owner, u.repo, u.ref, u.path);
 	}
+	
+	
 	
 	/** Recursively list all file paths (relative to repo root) under owner/repo/branch/path.
 	 *
