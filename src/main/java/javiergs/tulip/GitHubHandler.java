@@ -66,14 +66,34 @@ public class GitHubHandler {
 	//}
 	
 	public String getFileContentFromUrl(String fileUrl) throws IOException {
+		// If the URL is not in the expected /blob/ or /tree/ form, try to normalize it
+		if (!fileUrl.contains("/blob/") && !fileUrl.contains("/tree/")) {
+			// Expected shape right now: https://github.com/{owner}/{repo}/{path...}
+			// We will assume branch "main" and insert /blob/main/ after repo
+			// 1) strip trailing slash
+			String normalized = fileUrl;
+			if (normalized.endsWith("/")) {
+				normalized = normalized.substring(0, normalized.length() - 1);
+			}
+			
+			// split into pieces
+			// e.g. https://github.com/javiergs/ADASIM/library/... ->
+			// [0]=https:, [1]=, [2]=github.com, [3]=javiergs, [4]=ADASIM, [5..]=path
+			String[] parts = normalized.split("/", 6);
+			if (parts.length < 5) {
+				throw new IllegalArgumentException("Cannot normalize GitHub URL: " + fileUrl);
+			}
+			String owner = parts[3];
+			String repo  = parts[4];
+			String path  = (parts.length == 6) ? parts[5] : "";
+			
+			// now just call the owner/repo/path version assuming branch "main"
+			return getFileContent(owner, repo, path, "main");
+		}
+		
+		// original path for already-correct URLs
 		URLHelper u = URLHelper.parseGitHubUrl(fileUrl);
 		if (!u.isBlob) {
-			// If the user gave just ".../repo/path/to/File.java" without /blob/<ref>/...
-			// we can assume main and re-call with a normalized URL
-			if ((u.ref == null || u.ref.isBlank()) && u.path != null && !u.path.isBlank()) {
-				// re-try using owner/repo/path with the default branch "main"
-				return getFileContent(u.owner, u.repo, u.path, "main");
-			}
 			throw new IllegalArgumentException("URL does not point to a file (/blob/...): " + fileUrl);
 		}
 		String path = (u.path == null) ? "" : u.path;
