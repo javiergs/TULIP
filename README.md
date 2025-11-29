@@ -1,4 +1,7 @@
- [![](https://jitpack.io/v/javiergs/TULIP.svg)](https://jitpack.io/#javiergs/TULIP)
+![Static Badge](https://img.shields.io/badge/author-javiergs-orange)
+![GitHub repo size](https://img.shields.io/github/repo-size/javiergs/App-ProduceConsume)
+![](https://jitpack.io/v/javiergs/TULIP.svg)](https://jitpack.io/#javiergs/TULIP)
+![Java](https://img.shields.io/badge/Java-21+-blue)
  
 A lightweight Java teaching library for rapid, structured student projects
 
