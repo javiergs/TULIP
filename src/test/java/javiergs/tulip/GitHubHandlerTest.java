@@ -5,7 +5,6 @@ import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.util.List;
 
-
 /**
  * Integration tests for the GitHubHandler class.
  * These tests make real requests to GitHub's REST API and therefore require network access.

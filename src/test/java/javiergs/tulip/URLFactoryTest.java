@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for URLFactory class.
+ * Unit tests for the URLFactory class.
  *
  * @author javiergs
  * @version 3.0 (2025.11.29)

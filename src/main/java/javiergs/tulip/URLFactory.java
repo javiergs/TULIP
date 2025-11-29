@@ -3,12 +3,16 @@ package javiergs.tulip;
 import java.net.URI;
 
 /**
- * Parses a GitHub URL and returns a URLObject instance. Supports:
- *
+ * Parses a GitHub URL and returns a URLObject instance.
+ * It supports:
+ * <p>
  * - https://github.com/{owner}/{repository}
  * - https://github.com/{owner}/{repository}/tree/{revision}
  * - https://github.com/{owner}/{repository}/tree/{revision}/{path...}
  * - https://github.com/{owner}/{repository}/blob/{revision}/{path...}
+ *
+ * @author javiergs
+ * @version 3.0
  */
 public class URLFactory {
 	
@@ -24,56 +28,34 @@ public class URLFactory {
 		if (!"github.com".equalsIgnoreCase(uri.getHost())) {
 			throw new IllegalArgumentException("Not a github.com URL: " + url);
 		}
-		
 		String[] segments = uri.getPath().split("/", -1);
 		if (segments.length < 3 || segments[1].isBlank() || segments[2].isBlank()) {
 			throw new IllegalArgumentException("Missing owner/repository in URL: " + url);
 		}
-		
 		String owner = segments[1];
 		String repository = segments[2];
-		
 		// CASE 1 — plain repo URL → assume main
 		if (segments.length == 3) {
 			return new URLObject(owner, repository, "main", "", URLObject.Kind.ROOT);
 		}
-		
 		// CASE 2 — explicit /tree/ or /blob/
 		URLObject.Kind kind = calculateKind(segments[3]);
 		if (kind == URLObject.Kind.TREE || kind == URLObject.Kind.BLOB) {
-			
 			if (segments.length < 5 || segments[4].isBlank()) {
 				throw new IllegalArgumentException("Missing {revision} segment: " + url);
 			}
 			String revision = segments[4];
-			
 			String path = buildPath(segments, 5);
-			
 			if (kind == URLObject.Kind.BLOB && path.isBlank()) {
 				throw new IllegalArgumentException(
 					"Missing file path after /blob/{revision}/: " + url);
 			}
-			
 			return new URLObject(owner, repository, revision, path, kind);
 		}
-		
 		// CASE 3 — plain: owner/repo/...path → assume main + TREE
 		String dirPath = buildPath(segments, 3);
 		URLObject.Kind type = dirPath.isBlank() ? URLObject.Kind.ROOT : URLObject.Kind.TREE;
-		
 		return new URLObject(owner, repository, "main", dirPath, type);
-	}
-	
-	private static String[] splitAndValidate(String url) {
-		URI uri = URI.create(url);
-		if (!"github.com".equalsIgnoreCase(uri.getHost())) {
-			throw new IllegalArgumentException("Not a github.com URL: " + url);
-		}
-		String[] segments = uri.getPath().split("/", -1); // ["", owner, repo, ...]
-		if (segments.length < 3 || segments[1].isBlank() || segments[2].isBlank()) {
-			throw new IllegalArgumentException("Missing owner/repository in URL: " + url);
-		}
-		return segments;
 	}
 	
 	private static String buildPath(String[] segments, int startIndex) {
@@ -93,5 +75,5 @@ public class URLFactory {
 		if (s == null || s.isBlank()) return URLObject.Kind.ROOT;
 		return null;
 	}
-
+	
 }
