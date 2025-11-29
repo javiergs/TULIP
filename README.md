@@ -31,7 +31,7 @@ You can include **TULIP** in your Java project using JitPack
 <dependency>
   <groupId>com.github.javiergs</groupId>
   <artifactId>TULIP</artifactId>
-  <version>v1.1</version>
+  <version>v2.5</version>
 </dependency>
 ```
 
