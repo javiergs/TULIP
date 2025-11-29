@@ -34,7 +34,7 @@ jobs:
       - name: Upload JavaDoc as Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: target/site/apidocs
+          path: target/apidocs
 
   deploy:
     environment:
