@@ -5,8 +5,6 @@
 
 [![Build and deploy JavaDoc](https://github.com/javiergs/TULIP/actions/workflows/javadoc-pages.yml/badge.svg?branch=main&event=push)](https://github.com/javiergs/TULIP/actions/workflows/javadoc-pages.yml)
 
-A lightweight Java teaching library for rapid, structured student projects
-
 ## Features
 
 - GitHub API helpers for reading remote repository contents  
