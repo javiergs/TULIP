@@ -103,8 +103,6 @@ String text = gh.getFileContentFromUrl(
 );
 ```
 
----
-
 ## API Reference
 Full JavaDoc available at:
 
