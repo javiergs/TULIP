@@ -1,4 +1,5 @@
-# Teaching Utilities for Learning Individual Practices
+ [![](https://jitpack.io/v/javiergs/TULIP.svg)](https://jitpack.io/#javiergs/TULIP)
+ 
 A lightweight Java teaching library for rapid, structured student projects
 
 ## Features
@@ -8,7 +9,7 @@ A lightweight Java teaching library for rapid, structured student projects
 
 ## Installation
 
-You can include **TULIP** in your Java project using [![](https://jitpack.io/v/javiergs/TULIP.svg)](https://jitpack.io/#javiergs/TULIP)
+You can include **TULIP** in your Java project using JitPack
 
 1. With Maven, add the JitPack repository:
 
@@ -33,7 +34,7 @@ You can include **TULIP** in your Java project using [![](https://jitpack.io/v/j
 
 ## Available Versions
 
-Visit [https://jitpack.io/#javiergs/TULIP](https://jitpack.io/#javiergs/TULIP) to see all available versions and build status.
+Visit JitPAck to see all available versions and build status.
 
 ## Documentation
 
