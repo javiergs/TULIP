@@ -2,7 +2,9 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/javiergs/App-ProduceConsume)
 [![](https://jitpack.io/v/javiergs/TULIP.svg)](https://jitpack.io/#javiergs/TULIP)
 ![Java](https://img.shields.io/badge/Java-21+-blue)
- 
+
+[![Build and deploy JavaDoc](https://github.com/javiergs/TULIP/actions/workflows/javadoc-pages.yml/badge.svg?branch=main&event=push)](https://github.com/javiergs/TULIP/actions/workflows/javadoc-pages.yml)
+
 A lightweight Java teaching library for rapid, structured student projects
 
 ## Features
