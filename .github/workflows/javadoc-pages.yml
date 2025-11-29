@@ -34,7 +34,14 @@ jobs:
       - name: Upload JavaDoc as Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: target/apidocs
+          path: library/target/site/apidocs
+
+      - name: Show target tree
+        run: |
+          echo "Workspace contents:"
+          ls
+          echo "Recursive target listing:"
+          find . -maxdepth 4 -type d -name "apidocs" -print
 
   deploy:
     environment:
