@@ -6,7 +6,13 @@
 
     <groupId>javiergs</groupId>
     <artifactId>TULIP</artifactId>
-    <version>v2.2</version>
+    <version>v3.0</version>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <name>TULIP</name>
     <description>Teaching Utilities for Learning Individual Practices</description>
@@ -26,12 +32,6 @@
             <email>javiergs@acm.org</email>
         </developer>
     </developers>
-
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <dependencies>
         <dependency>
