@@ -28,19 +28,15 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # Run javadoc in the 'library' module where the code actually is
       - name: Build JavaDoc
-        run: mvn -B -DskipTests javadoc:javadoc
+        run: mvn -B -DskipTests -pl library -am javadoc:javadoc
 
-      - name: Locate apidocs directory
-        run: |
-          echo "Searching for apidocs directories..."
-          find . -maxdepth 6 -type d -name "apidocs" -print
-
+      # Point to the module’s apidocs directory
       - name: Upload JavaDoc as Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # TEMPORARY – will fix once we see the real path in the step above
-          path: target/site/apidocs
+          path: library/target/site/apidocs
 
   deploy:
     environment:
