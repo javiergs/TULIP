@@ -31,17 +31,16 @@ jobs:
       - name: Build JavaDoc
         run: mvn -B -DskipTests javadoc:javadoc
 
+      - name: Locate apidocs directory
+        run: |
+          echo "Searching for apidocs directories..."
+          find . -maxdepth 6 -type d -name "apidocs" -print
+
       - name: Upload JavaDoc as Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: library/target/site/apidocs
-
-      - name: Show target tree
-        run: |
-          echo "Workspace contents:"
-          ls
-          echo "Recursive target listing:"
-          find . -maxdepth 4 -type d -name "apidocs" -print
+          # TEMPORARY – will fix once we see the real path in the step above
+          path: target/site/apidocs
 
   deploy:
     environment:
