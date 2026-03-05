@@ -1,5 +1,7 @@
 package javiergs.tulip;
 
+import javiergs.tulip.github.URLFactory;
+import javiergs.tulip.github.URLObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
