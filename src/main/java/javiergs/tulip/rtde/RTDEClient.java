@@ -261,45 +261,47 @@ public class RTDEClient extends PropertyChangeSupport {
 	// private double[] lastTCPose = null;
 	
 	private void parseDataPackage(byte[] payload) {
-		if (payload.length != 97) {
-			logger.error("Unexpected payload length: {} (expected 97)", payload.length);
-			return;
-		}
-		ByteBuffer bb = ByteBuffer.wrap(payload).order(ByteOrder.BIG_ENDIAN);
-		// skip variableId
-		bb.get();
-		// joints
-		double[] actualQ = new double[6];
-		for (int i = 0; i < 6; i++)
-			actualQ[i] = bb.getDouble();
-		
-		double[] lastActualQ = robotState.getJointsData().get();
-		if (lastActualQ == null || isSignificantlyDifferent(lastActualQ, actualQ, 1e-5)) {
-			// lastActualQ = actualQ;
-			robotState.getJointsData().set(actualQ);
-			firePropertyChange("actual_q", null, actualQ);
-		}
-		// logger.debug(String.format(">>> RTDE actual_q: %s", java.util.Arrays.toString(actualQ)));
-		// TCP pose
-		
-		double[] tcpPose = new double[6];
-		for (int i = 0; i < 6; i++)
-			tcpPose[i] = bb.getDouble();
-		CartesianData poseData = new CartesianData()
-			.setX(tcpPose[0])
-			.setY(tcpPose[1])
-			.setZ(tcpPose[2])
-			.setRx(tcpPose[3])
-			.setRy(tcpPose[4])
-			.setRz(tcpPose[5]);
-		
-		// double[] lastTCPose = robotState.getCartesianData().get();
-		// logger.debug(String.format(">>> RTDE actual_pose: %s", java.util.Arrays.toString(tcpPose)));
-		// double[] lastTCPose = tcpPose;
-		
-		robotState.setCartesianData(poseData);
-		firePropertyChange("actual_pose", null, poseData);
-		
+    if (payload.length != 97) {
+      logger.error("Unexpected payload length: {} (expected 97)", payload.length);
+      return;
+    }
+    ByteBuffer bb = ByteBuffer.wrap(payload).order(ByteOrder.BIG_ENDIAN);
+    // skip variableId
+    bb.get();
+    // joints
+    double[] actualQ = new double[6];
+    for (int i = 0; i < 6; i++)
+      actualQ[i] = bb.getDouble();
+
+    double[] lastActualQ = robotState.getJointsData().get();
+    if (lastActualQ == null || isSignificantlyDifferent(lastActualQ, actualQ, 1e-5)) {
+      // lastActualQ = actualQ;
+      robotState.getJointsData().set(actualQ);
+      firePropertyChange("actual_q", null, actualQ);
+    }
+    // logger.debug(String.format(">>> RTDE actual_q: %s", java.util.Arrays.toString(actualQ)));
+    // TCP pose
+
+    double[] tcpPose = new double[6];
+    for (int i = 0; i < 6; i++)
+      tcpPose[i] = bb.getDouble();
+    CartesianData poseData = new CartesianData()
+        .setX(tcpPose[0])
+        .setY(tcpPose[1])
+        .setZ(tcpPose[2])
+        .setRx(tcpPose[3])
+        .setRy(tcpPose[4])
+        .setRz(tcpPose[5]);
+
+    // double[] lastTCPose = robotState.getCartesianData().get();
+    // logger.debug(String.format(">>> RTDE actual_pose: %s", java.util.Arrays.toString(tcpPose)));
+    // double[] lastTCPose = tcpPose;
+
+    double[] lastTCPose = robotState.getCartesianData().get();
+   if (lastTCPose == null || isSignificantlyDifferent(lastTCPose, tcpPose, 1e-5)) {
+    robotState.setCartesianData(poseData);
+    firePropertyChange("actual_pose", null, poseData);
+   }
 		//logger.info(String.format("RTDE actual_pose: %s", java.util.Arrays.toString(tcpPose)));
 	}
 	
