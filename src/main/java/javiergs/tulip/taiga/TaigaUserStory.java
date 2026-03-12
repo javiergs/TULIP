@@ -5,12 +5,14 @@ public class TaigaUserStory {
   private final int ref;
   private final String subject;
   private final int statusId;
+  private final Long milestoneId;
 
-  public TaigaUserStory(long id, int ref, String subject, int statusId) {
+  public TaigaUserStory(long id, int ref, String subject, int statusId, Long milestoneId) {
     this.id = id;
     this.ref = ref;
     this.subject = subject == null ? "" : subject;
     this.statusId = statusId;
+    this.milestoneId = milestoneId;
   }
 
   public long getId() { return id; }

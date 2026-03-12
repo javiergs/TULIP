@@ -72,6 +72,7 @@ public class TaigaClient {
           s.path("ref").asInt(),
           s.path("subject").asText(""),
           s.path("status").asInt()
+              , s.path("milestone").isNull() ? null : s.path("milestone").asLong()
       ));
     }
     return out;
@@ -111,6 +112,24 @@ public class TaigaClient {
     }
     return out;
   }
+
+  public List<TaigaUserStory> getStoriesBySprint(long sprintId) throws Exception {
+
+    JsonNode arr = getJson("/api/v1/userstories?milestone=" + sprintId);
+
+    List<TaigaUserStory> out = new ArrayList<>();
+    for (JsonNode s : arr) {
+      out.add(new TaigaUserStory(
+          s.path("id").asLong(),
+          s.path("ref").asInt(),
+          s.path("subject").asText(""),
+          s.path("status").asInt(),
+          s.path("milestone").isNull() ? null : s.path("milestone").asLong()
+      ));
+    }
+    return out;
+  }
+
 
   // ---------------------------
   // INTERNALS
