@@ -7,7 +7,9 @@ import java.net.URI;
 import java.net.http.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TaigaClient {
 
@@ -128,6 +130,52 @@ public class TaigaClient {
       ));
     }
     return out;
+  }
+
+
+
+  public TaigaUser getUserById(long userId) throws Exception {
+    JsonNode u = getJson("/api/v1/users/" + userId);
+
+    String fullName =
+        !u.path("full_name_display").asText("").isBlank()
+            ? u.path("full_name_display").asText("")
+            : u.path("full_name").asText("");
+
+    return new TaigaUser(
+        u.path("id").asLong(),
+        u.path("username").asText(""),
+        fullName,
+        u.path("email").asText("")
+    );
+  }
+
+  /**
+   * Retrieve task statuses for a project.
+   * These ids are project-specific, so use this mapping to convert status ids to names.
+   */
+  public List<TaigaStatus> getTaskStatuses(long projectId) throws Exception {
+    JsonNode arr = getJson("/api/v1/task-statuses?project=" + projectId);
+
+    List<TaigaStatus> out = new ArrayList<>();
+    for (JsonNode s : arr) {
+      out.add(new TaigaStatus(
+          s.path("id").asLong(),
+          s.path("name").asText(""),
+          s.path("slug").asText(""),
+          s.path("color").asText(""),
+          s.path("order").asInt()
+      ));
+    }
+    return out;
+  }
+
+  public Map<Long, String> getTaskStatusMap(long projectId) throws Exception {
+    Map<Long, String> map = new HashMap<>();
+    for (TaigaStatus s : getTaskStatuses(projectId)) {
+      map.put(s.getId(), s.getName());
+    }
+    return map;
   }
 
 
