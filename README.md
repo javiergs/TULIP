@@ -1,6 +1,5 @@
 ![Static Badge](https://img.shields.io/badge/author-javiergs-orange)
 ![Version](https://img.shields.io/badge/version-v8.0-green)
-[![](https://jitpack.io/v/javiergs/TULIP.svg)](https://jitpack.io/#javiergs/TULIP)
 ![GitHub repo size](https://img.shields.io/github/repo-size/javiergs/TULIP)
 ![Java](https://img.shields.io/badge/Java-21+-blue)
 
