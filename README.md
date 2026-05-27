@@ -41,7 +41,7 @@ Java wrapper around the Taiga REST API.
 
 ➡️ [Taiga Client Documentation](docs/taiga-client.md)
 
-## JavaDoc
+### JavaDoc
 
 ➡️ https://javiergs.github.io/tulip-api/javadoc/
 
