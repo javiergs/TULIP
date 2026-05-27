@@ -24,4 +24,8 @@ public class TaigaUserStory {
   public String toString() {
     return "#" + ref + " " + subject;
   }
+
+  public Long getMilestoneId() {
+    return milestoneId;
+  }
 }

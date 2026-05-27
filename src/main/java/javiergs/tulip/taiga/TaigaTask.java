@@ -6,13 +6,19 @@ public class TaigaTask {
   private final String subject;
   private final int statusId;
   private final Long assignedToUserId; // nullable
+  private final Long userStoryId;
 
-  public TaigaTask(long id, int ref, String subject, int statusId, Long assignedToUserId) {
+  public TaigaTask(long id, int ref, String subject, int statusId, Long assignedToUserId, Long userStoryId) {
     this.id = id;
     this.ref = ref;
     this.subject = subject == null ? "" : subject;
     this.statusId = statusId;
     this.assignedToUserId = assignedToUserId;
+    this.userStoryId = userStoryId;
+  }
+
+  public Long getUserStoryId() {
+    return userStoryId;
   }
 
   public long getId() { return id; }

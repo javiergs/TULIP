@@ -82,16 +82,21 @@ public class TaigaClient {
 
   public List<TaigaTask> getTasks(long projectId) throws Exception {
     JsonNode arr = getJson("/api/v1/tasks?project=" + projectId);
-
     List<TaigaTask> out = new ArrayList<>();
     for (JsonNode t : arr) {
-      Long assigned = t.path("assigned_to").isNull() ? null : t.path("assigned_to").asLong();
+      Long assigned = t.path("assigned_to").isNull()
+          ? null
+          : t.path("assigned_to").asLong();
+      Long userStoryId = t.path("user_story").isNull()
+          ? null
+          : t.path("user_story").asLong();
       out.add(new TaigaTask(
           t.path("id").asLong(),
           t.path("ref").asInt(),
           t.path("subject").asText(""),
           t.path("status").asInt(),
-          assigned
+          assigned,
+          userStoryId
       ));
     }
     return out;
