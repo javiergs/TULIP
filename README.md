@@ -2,10 +2,7 @@
 ![Version](https://img.shields.io/badge/version-v8.0-green)
 ![Java](https://img.shields.io/badge/Java-21+-blue)
 
-TULIP is a lightweight Java utility library focused on software engineering automation, repository analysis, educational tooling, and project-management integration.
-
-Version 8.0 expands the library with a complete Taiga API client while preserving all previous GitHub repository utilities and URL parsing tools.
-
+A lightweight Java utility library provide Github and Taiga API clients.
 
 # Features
 
@@ -19,9 +16,6 @@ Version 8.0 expands the library with a complete Taiga API client while preservin
 - Optional GitHub token support via `tulip.properties`
 - Lightweight Java-only implementation
 - Maven-friendly integration
-
-## URL Parsing Utilities
-
 - Parse:
     - repository root URLs
     - tree URLs
@@ -68,7 +62,7 @@ No additional repositories are required.
 </dependency>
 ```
 
-## 3. Using Taiga Authentication
+## 3. Using Authentication
 
 Taiga integration requires a local configuration file containing your Taiga credentials.
 
@@ -323,13 +317,12 @@ TaigaTask moved =
 taiga.deleteTask(task.getId());
 ```
 
+> [!NOTE]
 
-# Note on Taiga public API
-
-The Taiga public API applies throttling/rate limits.
-
-Some heavy traversal integration tests are intentionally disabled to avoid excessive API requests.
-
+> The Taiga public API applies throttling/rate limits.
+>
+> Some heavy traversal integration tests are intentionally disabled to avoid excessive API requests.
+>
 
 
 # API Reference
