@@ -52,7 +52,7 @@ Version 8.0 expands the library with a complete Taiga API client while preservin
 
 # Installation
 
-Include **TULIP** in your Java project using JitPack.
+Include **TULIP** in your Java project using Maven.
 
 ## 1. Maven Central
 
