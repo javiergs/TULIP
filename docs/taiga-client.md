@@ -9,7 +9,12 @@ It supports:
 - Task retrieval
 - Creation/update/deletion operations
 - Task status movement
-- Pagination handling
+- Automatically handles paginated Taiga API endpoints internally.
+- PATCH operations to automatically retrieves and injects the proper version field before updates.
+
+> [!NOTE]
+> The Taiga public API applies throttling/rate limits.
+> Some heavy traversal integration tests are intentionally disabled to avoid excessive API requests.
 
 ## Authentication
 
@@ -156,20 +161,4 @@ TaigaTask moved =
 taiga.deleteTask(task.getId());
 ```
 
-
-## Pagination Support
-
-The client automatically handles paginated Taiga API endpoints internally.
-
-
-## PATCH Version Handling
-
-Taiga requires PATCH operations to include the current object version.
-
-The client automatically retrieves and injects the proper version field before updates.
-
-
-> [!NOTE]
-> The Taiga public API applies throttling/rate limits.
-> Some heavy traversal integration tests are intentionally disabled to avoid excessive API requests.
 
