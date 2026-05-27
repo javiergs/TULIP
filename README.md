@@ -318,11 +318,8 @@ taiga.deleteTask(task.getId());
 ```
 
 > [!NOTE]
-
 > The Taiga public API applies throttling/rate limits.
->
 > Some heavy traversal integration tests are intentionally disabled to avoid excessive API requests.
->
 
 
 # API Reference
