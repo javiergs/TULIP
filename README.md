@@ -1,6 +1,5 @@
 ![Static Badge](https://img.shields.io/badge/author-javiergs-orange)
 ![Version](https://img.shields.io/badge/version-v8.0-green)
-![GitHub repo size](https://img.shields.io/github/repo-size/javiergs/TULIP)
 ![Java](https://img.shields.io/badge/Java-21+-blue)
 
 TULIP is a lightweight Java utility library focused on software engineering automation, repository analysis, educational tooling, and project-management integration.
