@@ -162,7 +162,7 @@ taiga.deleteTask(task.getId());
 The client automatically handles paginated Taiga API endpoints internally.
 
 
-# PATCH Version Handling
+## PATCH Version Handling
 
 Taiga requires PATCH operations to include the current object version.
 
