@@ -12,7 +12,6 @@ A lightweight Java utility library providing:
 - Compiler helpers
 - Groq API integration
 
----
 
 # Installation
 
@@ -26,7 +25,6 @@ A lightweight Java utility library providing:
 </dependency>
 ```
 
----
 
 # Modules
 
@@ -39,7 +37,6 @@ Utilities for:
 
 ➡️ [GitHub Client Documentation](docs/github-client.md)
 
----
 
 ## Taiga API Client
 
@@ -47,7 +44,6 @@ Java wrapper around the Taiga REST API.
 
 ➡️ [Taiga Client Documentation](docs/taiga-client.md)
 
----
 
 ## RTDE Robotics Utilities
 
@@ -55,7 +51,6 @@ Utilities for Universal Robots RTDE communication.
 
 ➡️ [RTDE Documentation](docs/rtde.md)
 
----
 
 ## Compiler Utilities
 
@@ -63,7 +58,6 @@ Automata, lexer, and token helper classes.
 
 ➡️ [Compiler Documentation](docs/compiler.md)
 
----
 
 ## Groq Utilities
 
@@ -71,7 +65,6 @@ Simple Groq API integration helpers.
 
 ➡️ [Groq Documentation](docs/groq.md)
 
----
 
 # JavaDoc
 
