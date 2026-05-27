@@ -43,7 +43,7 @@ Java wrapper around the Taiga REST API.
 
 ### JavaDoc
 
-➡️ https://javiergs.github.io/tulip-api/javadoc/
+📘 <a href="https://javiergs.github.io/tulip-api/javadoc/" target="_blank">JavaDoc</a>
 
 ### RTDE Robotics Utilities
 
