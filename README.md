@@ -90,9 +90,9 @@ src/main/resources/tulip.properties
 Add:
 
 ```text
-TAIGA_HOST=https://api.taiga.io
-TAIGA_USERNAME=your_username
-TAIGA_PASSWORD=your_password
+taiga.host=https://api.taiga.io
+taiga.username=your_username
+taiga.password=your_password
 ```
 
 Example usage:
