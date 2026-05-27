@@ -44,21 +44,16 @@ Java wrapper around the Taiga REST API.
 
 ### RTDE Robotics Utilities
 
-Utilities for Universal Robots RTDE communication.
+Universal Robots RTDE communication.
 
-➡️ [RTDE Documentation](docs/rtde.md)
-
-
-### Compiler Utilities
-
-Automata, lexer, and token helper classes.
-
-➡️ [Compiler Documentation](docs/compiler.md)
+> [!IMPORTANT]
+> This module is currently under active development.
 
 
 ### Groq Utilities
 
-Simple Groq API integration helpers.
+Groq API integration helpers.
 
-➡️ [Groq Documentation](docs/groq.md)
+> [!IMPORTANT]
+> This module is currently under active development.
 
