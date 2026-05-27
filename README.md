@@ -145,6 +145,7 @@ u.isDirectory();
 
 Utilities for interacting with remote GitHub repositories.
 
+
 ### Supported Operations
 
 - List files and folders in repositories
@@ -205,6 +206,10 @@ This helps avoid GitHub API rate limits for unauthenticated users.
 ## TaigaClient
 
 The new `TaigaClient` provides a lightweight Java wrapper around the Taiga REST API.
+
+> [!NOTE]
+> The Taiga public API applies throttling/rate limits.
+> Some heavy traversal integration tests are intentionally disabled to avoid excessive API requests.
 
 
 ## Authentication
@@ -316,10 +321,6 @@ TaigaTask moved =
 ```java
 taiga.deleteTask(task.getId());
 ```
-
-> [!NOTE]
-> The Taiga public API applies throttling/rate limits.
-> Some heavy traversal integration tests are intentionally disabled to avoid excessive API requests.
 
 
 # API Reference
