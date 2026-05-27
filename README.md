@@ -57,10 +57,7 @@ Include **TULIP** in your Java project using Maven.
 ## 1. Maven Central
 
 TULIP is now distributed through Maven Central.
-
-Repository:
-
- [oai_citation:0‡repo1.maven.org](https://repo1.maven.org/maven2/com/javiergs/tulip/8.0.0/?utm_source=chatgpt.com)
+No additional repositories are required.
 
 ## 2. Add the dependency
 
