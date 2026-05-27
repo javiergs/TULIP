@@ -6,13 +6,16 @@ public class TaigaUserStory {
   private final String subject;
   private final int statusId;
   private final Long milestoneId;
+  private final long version;
 
-  public TaigaUserStory(long id, int ref, String subject, int statusId, Long milestoneId) {
+  public TaigaUserStory(long id, int ref, String subject, int status,
+                        Long milestoneId, long version) {
     this.id = id;
     this.ref = ref;
-    this.subject = subject == null ? "" : subject;
-    this.statusId = statusId;
+    this.subject = subject;
+    this.statusId = status;
     this.milestoneId = milestoneId;
+    this.version = version;
   }
 
   public long getId() { return id; }
@@ -27,5 +30,9 @@ public class TaigaUserStory {
 
   public Long getMilestoneId() {
     return milestoneId;
+  }
+
+  public long getVersion() {
+    return version;
   }
 }

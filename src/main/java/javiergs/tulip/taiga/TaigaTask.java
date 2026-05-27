@@ -7,14 +7,17 @@ public class TaigaTask {
   private final int statusId;
   private final Long assignedToUserId; // nullable
   private final Long userStoryId;
+  private final long version;
 
-  public TaigaTask(long id, int ref, String subject, int statusId, Long assignedToUserId, Long userStoryId) {
+  public TaigaTask(long id, int ref, String subject, int status,
+                   Long assignedToUserId, Long userStoryId, long version) {
     this.id = id;
     this.ref = ref;
-    this.subject = subject == null ? "" : subject;
-    this.statusId = statusId;
+    this.subject = subject;
+    this.statusId = status;
     this.assignedToUserId = assignedToUserId;
     this.userStoryId = userStoryId;
+    this.version = version;
   }
 
   public Long getUserStoryId() {
@@ -31,4 +34,8 @@ public class TaigaTask {
   public String toString() {
     return "#" + ref + " " + subject;
   }
+  public long getVersion() {
+    return version;
+  }
+
 }
