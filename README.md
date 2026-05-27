@@ -54,24 +54,21 @@ Version 8.0 expands the library with a complete Taiga API client while preservin
 
 Include **TULIP** in your Java project using JitPack.
 
-## 1. Add the JitPack repository
+## 1. Maven Central
 
-```xml
-<repositories>
-  <repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
-  </repository>
-</repositories>
-```
+TULIP is now distributed through Maven Central.
+
+Repository:
+
+ [oai_citation:0‡repo1.maven.org](https://repo1.maven.org/maven2/com/javiergs/tulip/8.0.0/?utm_source=chatgpt.com)
 
 ## 2. Add the dependency
 
 ```xml
 <dependency>
-  <groupId>com.github.javiergs</groupId>
-  <artifactId>TULIP</artifactId>
-  <version>v8.0</version>
+    <groupId>com.javiergs</groupId>
+    <artifactId>tulip</artifactId>
+    <version>8.0.0</version>
 </dependency>
 ```
 
