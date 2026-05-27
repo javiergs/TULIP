@@ -1,5 +1,5 @@
 ![Static Badge](https://img.shields.io/badge/author-javiergs-orange)
-![Version](https://img.shields.io/badge/version-8.0-green)
+![Version](https://img.shields.io/badge/version-8.0.0-green)
 ![Java](https://img.shields.io/badge/Java-21+-blue)
 
 A lightweight Java utility library providing:
