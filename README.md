@@ -333,25 +333,12 @@ taiga.deleteTask(task.getId());
 ```
 
 
-# Notes on Taiga Integration Tests
+# Note on Taiga public API
 
 The Taiga public API applies throttling/rate limits.
 
 Some heavy traversal integration tests are intentionally disabled to avoid excessive API requests.
 
-Integration tests require:
-
-```text
-src/test/resources/config.properties
-```
-
-Example:
-
-```text
-taiga.host=https://api.taiga.io
-taiga.username=your_username
-taiga.password=your_password
-```
 
 
 # API Reference
