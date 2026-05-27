@@ -79,6 +79,47 @@ Include **TULIP** in your Java project using JitPack.
 </dependency>
 ```
 
+## 3. Using Taiga Authentication
+
+Taiga integration requires a local configuration file containing your Taiga credentials.
+
+Create:
+
+```text
+src/main/resources/tulip.properties
+```
+
+Add:
+
+```text
+TAIGA_HOST=https://api.taiga.io
+TAIGA_USERNAME=your_username
+TAIGA_PASSWORD=your_password
+```
+
+Example usage:
+
+```java
+Properties p = new Properties();
+
+try (InputStream in =
+         getClass().getClassLoader()
+             .getResourceAsStream("tulip.properties")) {
+
+    p.load(in);
+}
+
+TaigaClient taiga = new TaigaClient(
+    p.getProperty("TAIGA_HOST")
+);
+
+taiga.login(
+    p.getProperty("TAIGA_USERNAME"),
+    p.getProperty("TAIGA_PASSWORD")
+);
+```
+
+This keeps credentials outside source code and simplifies local development and testing.
 
 # What TULIP Provides
 
